@@ -18,18 +18,49 @@ module.exports = () => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './src/index.html', // Make sure this path points to your actual HTML file
+        template: './src/index.html', 
         title: 'PWA Text Editor',
       }),
       new InjectManifest({
-        swSrc: './src/sw.js', // Adjust if your source service worker file has a different name
+        swSrc: './src/sw.js',
         swDest: 'service-worker.js',
+      }),
+      new WebpackPwaManifest({
+        fingerprints: false,
+        inject: true,
+        name: 'PWA Text Editor',
+        short_name: 'TextEditor',
+        description: 'A progressive web application for text editing',
+        background_color: '#225ca3',
+        theme_color: '#225ca3',
+        start_url: '/',
+        publicPath: '/',
+        icons: [
+          {
+            src: path.resolve('src/assets/icons/icon.png'), 
+            sizes: [96, 128, 192, 256, 384, 512], 
+            destination: path.join('assets', 'icons'),
+          },
+        ],
       }),
     ],
 
     module: {
       rules: [
-        
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+            },
+          },
+        },
       ],
     },
   };
