@@ -9,8 +9,8 @@ module.exports = () => {
   return {
     mode: 'development',
     entry: {
-      main: './client/src/js/index.js',
-      install: './client/src/js/install.js'
+      main: './src/js/index.js',
+      install: './src/js/install.js'
     },
     output: {
       filename: '[name].bundle.js',
@@ -18,31 +18,34 @@ module.exports = () => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: './client/src/index.html',
-        title: 'PWA Text Editor',
+        template: './index.html',
+        title: 'Webpack Plugin',
+        favicon: './favicon.ico',
       }),
       new InjectManifest({
-        swSrc: './client/src/sw.js',
-        swDest: 'service-worker.js',
+        swSrc: "./src-sw.js",
+        swDest: "service-worker.js"
       }),
       new WebpackPwaManifest({
-        fingerprints: false,
-        inject: true,
-        name: 'PWA Text Editor',
-        short_name: 'TextEditor',
-        description: 'A progressive web application for text editing',
-        background_color: '#225ca3',
-        theme_color: '#225ca3',
-        start_url: '/',
-        publicPath: '/',
+        filename: "manifest.json",
+        name: "Just Another Text Editor",
+        short_name: "JATE",
+        start_url: "./",
+        publicPath: "./",
+        crossorigin: 'use-credentials',
+        theme_color: '#272822',
+        background_color: '#272822',
+        display: 'standalone',
         icons: [
           {
-            src: path.resolve('client/src/assets/icons/icon.png'), 
-            sizes: [96, 128, 192, 256, 384, 512],
+            src: path.resolve("src/images/logo.png"),
             destination: path.join('assets', 'icons'),
-          },
-        ],
-      }),
+            type: "image/png",
+            sizes: [96, 128, 192, 256, 384, 512],
+            purpose: "any maskable"
+          }
+        ]
+      })
     ],
 
     module: {
@@ -52,12 +55,17 @@ module.exports = () => {
           use: ['style-loader', 'css-loader'],
         },
         {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource'
+        },
+        {
           test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
             },
           },
         },
